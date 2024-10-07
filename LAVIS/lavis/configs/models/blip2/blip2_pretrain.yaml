@@ -1,0 +1,36 @@
+ # Copyright (c) 2022, salesforce.com, inc.
+ # All rights reserved.
+ # SPDX-License-Identifier: BSD-3-Clause
+ # For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+
+model:
+  arch: pretrain
+  load_finetuned: False #change this back
+
+  pretrained:  "/fs/nexus-projects/brain_project/acl_sk_24/LAVIS/lavis/output/BLIP2/Pretrain_stage1/20240531130/checkpoint_99.pth"
+  finetuned: "" # change this back to empty
+
+  # vit encoder
+  image_size: 224
+  drop_path_rate: 0
+  use_grad_checkpoint: False
+  vit_precision: "fp16"
+  freeze_vit: False  # change this back to true
+
+  # Q-Former
+  num_query_token: 32
+
+
+preprocess:
+    vis_processor:
+        train:
+          name: "blip_image_train"
+          image_size: 224
+        eval:
+          name: "blip_image_eval"
+          image_size: 224
+    text_processor:
+        train:
+          name: "blip_caption"
+        eval:
+          name: "blip_caption"

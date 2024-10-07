@@ -1,0 +1,64 @@
+ # Copyright (c) 2022, salesforce.com, inc.
+ # All rights reserved.
+ # SPDX-License-Identifier: BSD-3-Clause
+ # For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+
+model:
+  arch: blip2_opt #blip2_vicuna_instruct
+  model_type: pretrain_opt2.7b  #vicuna7b
+  load_pretrained: True
+  # intialize stage 2 pretraining from stage 1 pretrained model
+  pretrained: "/fs/nexus-projects/brain_project/acl_sk_24/LAVIS/lavis/output/BLIP2/Pretrain_stage1/20240531130/checkpoint_99.pth"
+  freeze_vit: True
+
+
+datasets:
+  wavcaps_mm_caption:
+    audio_processor:
+      train:
+        name: htsat_audio
+        sampling_rate: 16000
+        n_frames: 2
+        frame_length: 512
+      eval:
+        name: htsat_audio
+        sampling_rate: 16000
+        n_frames: 2
+        frame_length: 512
+        
+    text_processor:
+        train:
+          name: blip_caption
+        eval:
+          name: blip_caption
+
+    data_type: [audio]
+
+run:
+  task: image_text_pretrain
+  # optimizer
+  lr_sched: "linear_warmup_cosine_lr"
+  init_lr: 1e-4
+  min_lr: 1e-5
+  warmup_lr: 1e-6
+
+  weight_decay: 0.05
+  max_epoch: 100
+  batch_size_train: 128
+  batch_size_eval: 64
+  num_workers: 8
+  warmup_steps: 2000
+
+  seed: 42
+  output_dir: "output/BLIP2/Pretrain_stage2"
+
+  amp: True
+  resume_ckpt_path: null
+
+  evaluate: False 
+  train_splits: ["train"]
+
+  device: "cuda"
+  world_size: 8
+  dist_url: "env://"
+  distributed: True
